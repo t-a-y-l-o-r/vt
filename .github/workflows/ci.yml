@@ -1,0 +1,35 @@
+# In YAML, 'raw' and 'endraw' can't come at the beginning of a token or at the end of a quoted value, which is why they're in weird places. They are
+# needed to escape YAML templating variables, which still allowing cookiecutter to replace the value of the repository name.
+
+name: Precommit
+on: pull_request
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  precommit:
+    name: Precommit linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
+      - run: python -m pip install pre-commit
+        shell: bash
+
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - run: pre-commit run --show-diff-on-failure --color=always ${{ inputs.extra_args }} --all-files
+        shell: bash
