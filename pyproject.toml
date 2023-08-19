@@ -13,7 +13,14 @@ requests = "^2.31.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.3"
+pudb = "^2022.1.3"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.flakeheaven]
+base = "https://raw.githubusercontent.com/flakeheaven/flakeheaven/master/pyproject.toml"
+exclude = ["README.rst", "README.md"]
+format = "grouped"
+show_source = true

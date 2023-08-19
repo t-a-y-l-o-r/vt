@@ -1,7 +1,18 @@
 from requests import Session
 from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry  # noqa
 from typing import Any
+from collections.abc import Sequence
 from enum import Enum, unique
+
+
+# TODO: make this configurable
+@unique
+class RetryCodes(Enum):
+    TOO_MANY = 429
+    SERVER_ERROR = 500
+    GATEWAY = 502
+    TIMEOUT = 504
 
 
 @unique
@@ -24,6 +35,10 @@ class TimeoutAdapter(HTTPAdapter):
 
 
 class Client(Session):
+    @unique
+    class Methods(Enum):
+        GET = "get"
+
     def __init__(
         self,
         url: str,
@@ -31,11 +46,40 @@ class Client(Session):
         *_: Any,
         timeout: Time = Time.TWO,
         backoff: Time = Time.HALF_SECOND,
+        max_retries: int = 5,
         **kwargs: Any,
     ) -> None:
+        # let requests do it's magic
+        super().__init__()
         self.host = url or kwargs["url"]
         self.key = key or kwargs["key"]
-        self.adapter = TimeoutAdapter(
-            timeout=timeout.value,
-            backoff_factor=backoff.value,
+        self.headers.update(
+            {
+                "accept": "application/json",
+                "x-apikey": self.key,
+            }
         )
+        adapter = TimeoutAdapter(
+            timeout=timeout.value,
+            max_retries=Retry(
+                total=max_retries,
+                status_forcelist=[code.value for code in RetryCodes],
+                backoff_factor=backoff.value,
+            ),
+        )
+        self.mount("https://", adapter)
+        self.mount("http://", adapter)
+
+    def request(  # type: ignore
+        self,
+        method: str,
+        path: str | Sequence[str],
+        query: str,
+        *args: Any,
+        **kwargs: Any,
+    ) -> Any:
+        path = path if isinstance(path, str) else "/".join(path)
+        path = path.rstrip("/")
+        path = path.lstrip("/")
+        url = f"{self.host}/{path}/{query}"
+        return super().request(method, url, *args, **kwargs)
