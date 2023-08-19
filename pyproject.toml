@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "vt"
-version = "0.0.4"
+name = "vt-api"
+version = "0.0.5"
 description = "Simple API wrapper for VirusTotal"
 authors = ["t-a-y-l-o-r <tcochran.dev@gmail.com>"]
 license = "MIT"
