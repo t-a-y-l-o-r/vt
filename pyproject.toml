@@ -6,6 +6,11 @@ authors = ["t-a-y-l-o-r <tcochran.dev@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "vt"}]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
