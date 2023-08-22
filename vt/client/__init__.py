@@ -78,6 +78,7 @@ class Client(Session):
         *args: Any,
         **kwargs: Any,
     ) -> Any:
+        # TODO: better map the args here to the requests.client args
         path = path if isinstance(path, str) else "/".join(path)
         path = path.rstrip("/")
         path = path.lstrip("/")
