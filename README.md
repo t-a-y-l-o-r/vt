@@ -20,7 +20,7 @@ from vt import VT
 
 my_vt = VT()
 
-ip_data = my_vt.checkip()
+ip_data = my_vt.checkip("8.8.8.8")
 ```
 
 ### The Client
@@ -38,7 +38,19 @@ from vt import Client, Env
 env = Env()
 vt_client = Client(env.url, env.key)
 
-vt_client.request("get", "/ip_addresses", "8.8.8.8", ...)
+vt_client.request("get", f"/ip_addresses/{ip}", ...)
+```
+
+Alternatively you can let vt handle the client instantiation and pull the client
+from your vt instnace
+
+```
+from vt import VT
+
+my_vt = VT()
+
+ip_data = my_vt.client.get(f"/ip_addresses/{ip}")
+
 ```
 
 ## Contributing

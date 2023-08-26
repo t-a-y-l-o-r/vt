@@ -2,7 +2,6 @@ from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry  # noqa
 from typing import Any
-from collections.abc import Sequence
 from enum import Enum, unique
 
 
@@ -70,17 +69,28 @@ class Client(Session):
         self.mount("https://", adapter)
         self.mount("http://", adapter)
 
-    def request(  # type: ignore
-        self,
-        method: str,
-        path: str | Sequence[str],
-        query: str,
-        *args: Any,
-        **kwargs: Any,
-    ) -> Any:
-        # TODO: better map the args here to the requests.client args
-        path = path if isinstance(path, str) else "/".join(path)
-        path = path.rstrip("/")
-        path = path.lstrip("/")
-        url = f"{self.host}/{path}/{query}"
-        return super().request(method, url, *args, **kwargs)
+    # def request(
+    #     self,
+    #     method: str,
+    #     url: str | Sequence[str],
+    #     params: str | Sequence[str] | None=None,
+    #     data: dict | None=None,
+    #     headers: dict | None=None,
+    #     cookies: dict | None=None,
+    #     files: dict | None=None,
+    #     auth: str | None=None,
+    #     timeout: TimeoutAdapter | None=None,
+    #     allow_redirects: bool=True,
+    #     proxies: Any=None,
+    #     hooks: Any=None,
+    #     stream: Any=None,
+    #     verify: Any=None,
+    #     cert: Any=None,
+    #     json: dict | None=None,
+    # ) -> Any:
+    #     # TODO: better map the args here to the requests.client args
+    #     url = url if isinstance(url, str) else "/".join(url)
+    #     url = url.rstrip("/")
+    #     url = url.lstrip("/")
+    #     full_url = f"{self.host}/{url}/{params}"
+    #     return super().request(method, full_url, **kwargs)
