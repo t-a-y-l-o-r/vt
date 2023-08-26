@@ -2,13 +2,12 @@ from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry  # noqa
 from typing import Any
-from collections.abc import Sequence
 from enum import Enum, unique
 
 
-# TODO: make this configurable
 @unique
 class RetryCodes(Enum):
+    # TODO: make this configurable
     TOO_MANY = 429
     SERVER_ERROR = 500
     GATEWAY = 502
@@ -70,17 +69,45 @@ class Client(Session):
         self.mount("https://", adapter)
         self.mount("http://", adapter)
 
-    def request(  # type: ignore
+    def request(
         self,
-        method: str,
-        path: str | Sequence[str],
-        query: str,
-        *args: Any,
-        **kwargs: Any,
+        method: str | bytes,
+        url: str | bytes,
+        params: Any = None,
+        data: Any = None,
+        headers: Any = None,
+        cookies: Any = None,
+        files: Any = None,
+        auth: Any = None,
+        timeout: Any = None,
+        allow_redirects: bool = True,
+        proxies: Any = None,
+        hooks: Any = None,
+        stream: Any = None,
+        verify: Any = None,
+        cert: Any = None,
+        json: dict | None = None,
     ) -> Any:
-        # TODO: better map the args here to the requests.client args
-        path = path if isinstance(path, str) else "/".join(path)
-        path = path.rstrip("/")
-        path = path.lstrip("/")
-        url = f"{self.host}/{path}/{query}"
-        return super().request(method, url, *args, **kwargs)
+        # TODO: decode will blowup in our face if it's not utf-8
+        url = url if isinstance(url, str) else url.decode()
+        url = url.rstrip("/")
+        url = url.lstrip("/")
+        full_url = f"{self.host}/{url}"
+        return super().request(
+            method,
+            full_url,
+            params,
+            data,
+            headers,
+            cookies,
+            files,
+            auth,
+            timeout,
+            allow_redirects,
+            proxies,
+            hooks,
+            stream,
+            verify,
+            cert,
+            json,
+        )
