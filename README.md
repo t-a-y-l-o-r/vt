@@ -29,16 +29,13 @@ vt has a client that you can hook into directly.
 This client works like a normal `requests` client except that it attempts to handle
 the vt specific details for you.
 
-To make a request you can use it like any other `requests` client with one minor exception.
-There is an extra argument for
-
 ```python
 from vt import Client, Env
 
 env = Env()
 vt_client = Client(env.url, env.key)
 
-vt_client.request("get", f"/ip_addresses/{ip}", ...)
+vt_client.get(f"/ip_addresses/{ip}", ...)
 ```
 
 Alternatively you can let vt handle the client instantiation and pull the client
