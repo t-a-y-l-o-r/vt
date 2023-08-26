@@ -58,6 +58,11 @@ repos:
                     "--warn-unreachable",
                     "--disallow-untyped-defs",
                 ]
+            exclude: |
+                (?x)^(
+                    .*scripts.*|
+                    .*tests.*|
+                )$
             additional_dependencies:
                 - types-requests
                 - types-pytz
