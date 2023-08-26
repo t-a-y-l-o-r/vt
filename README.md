@@ -41,7 +41,7 @@ vt_client.get(f"/ip_addresses/{ip}", ...)
 Alternatively you can let vt handle the client instantiation and pull the client
 from your vt instnace
 
-```
+```python
 from vt import VT
 
 my_vt = VT()
