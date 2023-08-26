@@ -30,3 +30,25 @@ base = "https://raw.githubusercontent.com/flakeheaven/flakeheaven/master/pyproje
 exclude = ["README.rst", "README.md"]
 format = "grouped"
 show_source = true
+
+[tool.flakeheaven.plugins]
+flake8-mutable = ["+*"]
+pylint = ["-*"]
+pycodestyle = ["-*"]
+
+[tool.pylint.messages_control]
+disable = [
+  "C0115",
+  "C0116",
+  "C0114",
+  "C0103",
+  "C0415",
+  "W0707",
+  "W0511",
+  "R0903",
+  "R0913",
+  "W0212",
+  "W0221",
+  "W1203",
+  "W503",
+]

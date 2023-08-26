@@ -1,13 +1,31 @@
 from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry  # noqa
-from typing import Any
+from requests.cookies import RequestsCookieJar
+from typing import Any, TYPE_CHECKING
 from enum import Enum, unique
+from collections.abc import Iterable, Mapping, MutableMapping
+
+if TYPE_CHECKING:
+    from _typeshed import SupportsRead
+
+Data = (
+    Iterable[bytes]
+    | str
+    | bytes
+    | SupportsRead[str | bytes]
+    | list[tuple[Any, Any]]
+    | tuple[tuple[Any, Any], ...]
+    | Mapping[Any, Any]
+    | None
+)
+Header = Mapping[str, str | bytes | None] | None
+Cookie = RequestsCookieJar | MutableMapping[str, str] | None
 
 
-# TODO: make this configurable
 @unique
 class RetryCodes(Enum):
+    # TODO: make this configurable
     TOO_MANY = 429
     SERVER_ERROR = 500
     GATEWAY = 502
@@ -69,28 +87,45 @@ class Client(Session):
         self.mount("https://", adapter)
         self.mount("http://", adapter)
 
-    # def request(
-    #     self,
-    #     method: str,
-    #     url: str | Sequence[str],
-    #     params: str | Sequence[str] | None=None,
-    #     data: dict | None=None,
-    #     headers: dict | None=None,
-    #     cookies: dict | None=None,
-    #     files: dict | None=None,
-    #     auth: str | None=None,
-    #     timeout: TimeoutAdapter | None=None,
-    #     allow_redirects: bool=True,
-    #     proxies: Any=None,
-    #     hooks: Any=None,
-    #     stream: Any=None,
-    #     verify: Any=None,
-    #     cert: Any=None,
-    #     json: dict | None=None,
-    # ) -> Any:
-    #     # TODO: better map the args here to the requests.client args
-    #     url = url if isinstance(url, str) else "/".join(url)
-    #     url = url.rstrip("/")
-    #     url = url.lstrip("/")
-    #     full_url = f"{self.host}/{url}/{params}"
-    #     return super().request(method, full_url, **kwargs)
+    def request(
+        self,
+        method: str | bytes,
+        url: str | bytes,
+        params: Any = None,
+        data: Data = None,
+        headers: Header = None,
+        cookies: Cookie = None,
+        files: Any = None,
+        auth: Any = None,
+        timeout: Any = None,
+        allow_redirects: bool = True,
+        proxies: Any = None,
+        hooks: Any = None,
+        stream: Any = None,
+        verify: Any = None,
+        cert: Any = None,
+        json: dict | None = None,
+    ) -> Any:
+        # TODO: decode will blowup in our face if it's not utf-8
+        url = url if isinstance(url, str) else url.decode()
+        url = url.rstrip("/")
+        url = url.lstrip("/")
+        full_url = f"{self.host}/{url}"
+        return super().request(
+            method,
+            full_url,
+            params,
+            data,
+            headers,
+            cookies,
+            files,
+            auth,
+            timeout,
+            allow_redirects,
+            proxies,
+            hooks,
+            stream,
+            verify,
+            cert,
+            json,
+        )
