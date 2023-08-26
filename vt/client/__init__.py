@@ -1,26 +1,8 @@
 from requests import Session
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry  # noqa
-from requests.cookies import RequestsCookieJar
-from typing import Any, TYPE_CHECKING
+from typing import Any
 from enum import Enum, unique
-from collections.abc import Iterable, Mapping, MutableMapping
-
-if TYPE_CHECKING:
-    from _typeshed import SupportsRead
-
-Data = (
-    Iterable[bytes]
-    | str
-    | bytes
-    | SupportsRead[str | bytes]
-    | list[tuple[Any, Any]]
-    | tuple[tuple[Any, Any], ...]
-    | Mapping[Any, Any]
-    | None
-)
-Header = Mapping[str, str | bytes | None] | None
-Cookie = RequestsCookieJar | MutableMapping[str, str] | None
 
 
 @unique
@@ -92,9 +74,9 @@ class Client(Session):
         method: str | bytes,
         url: str | bytes,
         params: Any = None,
-        data: Data = None,
-        headers: Header = None,
-        cookies: Cookie = None,
+        data: Any = None,
+        headers: Any = None,
+        cookies: Any = None,
         files: Any = None,
         auth: Any = None,
         timeout: Any = None,
